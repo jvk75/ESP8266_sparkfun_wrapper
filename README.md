@@ -11,6 +11,6 @@ Send commands via serial:
 
 - Set data.sparkfun.com public key: ```publickey <key>```
 
-- Data to be send to data.sparkfun.com: ```data {"key1":"value1","key2":"value2",...}```
+- Data to be send to data.sparkfun.com: ```data "key1":"value1","key2":"value2",...```
 
 Have fun ;)

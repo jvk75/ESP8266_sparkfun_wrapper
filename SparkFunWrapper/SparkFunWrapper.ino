@@ -4,6 +4,8 @@
 
 #include <ESP8266WiFi.h>
 
+#define readyPin 2 //ready for next command when pin HIGH
+
 const char* host = "data.sparkfun.com";
 String publickey;
 String privatekey;
@@ -17,33 +19,24 @@ String ssid;
 String password;
 
 void setup() {
+  pinMode(readyPin, OUTPUT);
+  digitalWrite(readyPin,LOW);
   Serial.begin(115200);
-  delay(10);
+  delay(100);
   Serial.println("");
   Serial.println("ESP8266Wifi wrapper for data.sparkfun.com starting");
 }
 
 void loop() {
   delay(100);
-
-  if (!isConnected) {
-    if (gotSsid && gotPass) {
-      Serial.print(ssid);
-      Serial.print(" ");
-      Serial.println(password);
-      connectWifi(ssid.c_str(),password.c_str());
-    } else { 
-      readSerial();
-    }
-  } else {
-    if (!dataReady) {
-      readSerial();
-    } 
-  }
+  digitalWrite(readyPin,HIGH);
+  readSerial();
 }
 
 void readSerial() {
   if (Serial.available()) {
+    digitalWrite(readyPin,LOW);
+    
     String readData = "";
     while (Serial.available()) {
       char c = Serial.read();
@@ -56,8 +49,7 @@ void readSerial() {
           Serial.print(" ");
           password = readNext();
           Serial.println(password);
-          gotPass = true;
-          gotSsid = true;
+          connectWifi(ssid.c_str(),password.c_str());
         } else if (readData == "publickey") {
           Serial.print("publickey: ");
           publickey = readNext().c_str();
@@ -77,6 +69,8 @@ void readSerial() {
     }
     Serial.print("readData -> ");
     Serial.println(readData);
+    
+    //digitalWrite(readyPin,HIGH);
   }
 }
 
@@ -158,7 +152,7 @@ void sendDataToServer(String dataToSend)
   client.print(String("GET ") + url + " HTTP/1.1\r\n" +
                "Host: " + host + "\r\n" + 
                "Connection: close\r\n\r\n");
-  delay(10);
+  delay(100);
   
   // Read all the lines of the reply from server and print them to Serial
   while(client.available()){
@@ -168,8 +162,7 @@ void sendDataToServer(String dataToSend)
   
   Serial.println();
   Serial.println("closing connection");
-
-  dataReady = false;
+  Serial.println();
 }
 
 

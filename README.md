@@ -13,4 +13,6 @@ Send commands via serial:
 
 - Data to be send to data.sparkfun.com: ```data "key1":"value1","key2":"value2",...```
 
+ESP8266 GPIO2 is used as indication to master. When pin is HIGH the ESP8266 is ready for new command. When pin is LOW previous command is not finnished and master should wait.
+
 Have fun ;)
